@@ -72,3 +72,15 @@ findAll([e(H1,H2)|T], N, L):- findAll(T, N, L).
 reaching(G, N, L):- member(e(N,_), G), findAll(G, N, L), !.
 %reaching([e(1,2),e(1,3),e(2,3)],1,[2,3]).
 %reaching([e(1,2),e(1,2),e(2,3)],1,[2,2]).
+
+%2.6
+% anypath (+ Graph , + Node1 , + Node2 , - ListPath )
+% a path from Node1 to Node2
+% if there are many path , they are showed 1 - by -1
+anypath([e(N1,N2)|T], N1, N2, [e(N1, N2)].
+anypath([e(N1, H2)|T], N1, N2, [e(N1, H2)|L]):- anypath(T, H2, N2, L).
+anypath([e(H1, H2)|T], N1, N2, L):- anypath(T, N1, N2, L).
+%anypath([e(1,2),e(1,3),e(2,3)],1,3,L).
+%anypath([e(1,2),e(1,3),e(2,3)],1,2,L).
+%anypath([e(1,2),e(1,3),e(2,3),e(1,4), e(2,4), e(3,4)],1,4,L).
+%anypath([e(1,1), e(1,2), e(2,1)], 1, 1, L)
