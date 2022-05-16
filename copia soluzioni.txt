@@ -44,3 +44,14 @@ withFirst(H, [H1, H2|T], [e(H1, H2)|L]):- withFirst(H, [H2|T], L).
 %fromCircList([1,2,3], [e(1,2), e(2,3), e(3,1)]).
 %fromCircList([1,2], [e(1,2), e(2,1)]).
 %fromCircList([1], e(1,1)).
+
+%2.3
+%in_degree(+Graph, +Node, -Deg) - deg is the number of edges leadin into Node
+in_degree([], _, 0).
+in_degree([e(_, N)|T], N, D):- in_degree(T, N, D1), D is D1+1, !.
+in_degree([e(_, H2)|T], N, D):- in_degree(T, N, D).
+
+%in_degree([e(1,2), e(1,3), e(3,2)], 2, 2).
+%in_degree([e(1,2), e(1,3), e(3,2)], 3, 1).
+%in_degree([e(1,2), e(1,3), e(3,2)], 1, 0).
+
