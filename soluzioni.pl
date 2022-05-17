@@ -21,21 +21,21 @@ dropAll(X, [ H | T ], [H | L]) :- dropAll(X, T, L).
 % ------ Part 2 ------
 % 2.1 - fromList(+List, -Graph)
 fromList([_], []).
-fromList([H1, H2|T], [e(H1, H2)|L]):- fromList([H2|T], L).
+fromList([H1, H2 | T], [e(H1, H2) | L]) :- fromList([H2 | T], L).
 %fromList([1,2,3], [e(1,2), e(2,3)]).
-%fromList([1,2], e(1,2)).
+%fromList([1,2], [e(1,2)]).
 %fromList([1], []).
 
 %fromCircList(+List, -Graph)
 last([H], H).
 last([H|T], L):- last(T, L).
 
-fromCircList2([E], e(E,E)).
+fromCircList2([E], [e(E,E)]).
 fromCircList2([H|T], R):- fromList([H|T], G),
 				last(T, L), !,
 	`			append(G, [e(L, H)], R).
 
-fromCircList([E], e(E,E)).
+fromCircList([E], [e(E,E)]).
 fromCircList([H|T], G):- withFirst(H, [H| T], G).
 withFirst(H, [L], [e(L,H)]).
 withFirst(H, [H1, H2|T], [e(H1, H2)|L]):- withFirst(H, [H2|T], L).
@@ -43,7 +43,7 @@ withFirst(H, [H1, H2|T], [e(H1, H2)|L]):- withFirst(H, [H2|T], L).
 %fromCircList([1,2,3,4], [e(1,2), e(2,3), e(3,4), e(4,1)]).
 %fromCircList([1,2,3], [e(1,2), e(2,3), e(3,1)]).
 %fromCircList([1,2], [e(1,2), e(2,1)]).
-%fromCircList([1], e(1,1)).
+%fromCircList([1], [e(1,1)]).
 
 %2.3
 %in_degree(+Graph, +Node, -Deg) - deg is the number of edges leadin into Node
@@ -75,7 +75,7 @@ dropNode(G, N, OG):- dropAll2(e(N,_), G, G2), dropAll2(e(_,N), G2, OG).
 % possibly use findall , looking for e ( Node , _ ) combined
 % with member (? Elem ,? List )
 %findall(Obj, Goal, L) - "Give me a list containing all the instantiations of Object which satisfy Goal." 
-reaching(G, N, L):- findall(Y, member(e(N,Y), G), L).
+reaching(G, N, L):- findall(X, member(e(N,X), G), L).
 %reaching([e(1,2),e(1,3),e(2,3)],1,[2,3]).
 %reaching([e(1,2),e(1,2),e(2,3)],1,[2,2]).
 
@@ -89,12 +89,35 @@ anypath([e(H1, H2)|T], N1, N2, L):- anypath(T, N1, N2, L).
 %anypath([e(1,2),e(1,3),e(2,3)],1,3,L).
 %anypath([e(1,2),e(1,3),e(2,3)],1,2,L).
 %anypath([e(1,2),e(1,3),e(2,3),e(1,4), e(2,4), e(3,4)],1,4,L).
-%anypath([e(1,1), e(1,2), e(2,1)], 1, 1, L)
+%anypath([e(1,1), e(1,2), e(2,1)], 1, 1, L) -- with cut in line 86 doesn't find all paths
 
 %2.7 
 % allreaching(+Graph, +Node, -List)
 % all the nodes that can be reached from Node
 % suppose the graph is NOT circular
-allreaching(G, N, L) :- findall(Y, anypath(G, N, Y, L2), L).
-
+% Use findall and anyPath !
+allreaching(G, N, L) :- findall(X, anypath(G, N, X, L2), L).
 % allreaching([e(1,2),e(2,3),e(3,5)],1,[2,3,5]).
+
+%2.8
+%During last lesson we see how to generate a grid-like network. Adapt
+%that code to create a graph for the predicates implemented so far.
+%Try to generate all paths from a node to another, limiting the
+%maximum number of hops
+
+%generate a complete graph  with N nodes
+graphlink(N, N, _, []).
+graphlink(N, X, X, L):- X2 is X+1,
+			graphlink(N, X2, 0, L), !.
+graphlink(N, X, Y, [e(X,Y)| L]):-  
+				Y < X, 
+				Y2 is Y+1, 
+				graphlink(N, X, Y2, L), !.
+
+
+ 
+	
+
+
+
+
