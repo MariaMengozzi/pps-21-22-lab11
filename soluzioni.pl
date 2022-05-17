@@ -72,10 +72,10 @@ dropNode(G, N, OG):- dropAll2(e(N,_), G, G2), dropAll2(e(_,N), G2, OG).
 %2.5
 % reaching (+ Graph , + Node , - List ) 
 % all the nodes that can be reached in 1 step from Node
-findAll([], N, []).
-findAll([e(N,H2)|T], N, [H2|L]):- findAll(T, N, L).
-findAll([e(H1,H2)|T], N, L):- findAll(T, N, L).
-reaching(G, N, L):- member(e(N,_), G), findAll(G, N, L), !.
+% possibly use findall , looking for e ( Node , _ ) combined
+% with member (? Elem ,? List )
+%findall(Obj, Goal, L) - "Give me a list containing all the instantiations of Object which satisfy Goal." 
+reaching(G, N, L):- findall(Y, member(e(N,Y), G), L).
 %reaching([e(1,2),e(1,3),e(2,3)],1,[2,3]).
 %reaching([e(1,2),e(1,2),e(2,3)],1,[2,2]).
 
@@ -83,10 +83,18 @@ reaching(G, N, L):- member(e(N,_), G), findAll(G, N, L), !.
 % anypath (+ Graph , + Node1 , + Node2 , - ListPath )
 % a path from Node1 to Node2
 % if there are many path , they are showed 1 - by -1
-anypath([e(N1,N2)|T], N1, N2, [e(N1, N2)]):-!.
+anypath([e(N1,N2)|T], N1, N2, [e(N1, N2)]).
 anypath([e(N1, H2)|T], N1, N2, [e(N1, H2)|L]):- anypath(T, H2, N2, L).
 anypath([e(H1, H2)|T], N1, N2, L):- anypath(T, N1, N2, L).
 %anypath([e(1,2),e(1,3),e(2,3)],1,3,L).
 %anypath([e(1,2),e(1,3),e(2,3)],1,2,L).
 %anypath([e(1,2),e(1,3),e(2,3),e(1,4), e(2,4), e(3,4)],1,4,L).
 %anypath([e(1,1), e(1,2), e(2,1)], 1, 1, L)
+
+%2.7 
+% allreaching(+Graph, +Node, -List)
+% all the nodes that can be reached from Node
+% suppose the graph is NOT circular
+allreaching(G, N, L) :- findall(Y, anypath(G, N, Y, L2), L).
+
+% allreaching([e(1,2),e(2,3),e(3,5)],1,[2,3,5]).
