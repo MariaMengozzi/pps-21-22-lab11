@@ -117,16 +117,17 @@ anypathHops(G, N1, N2, [e(N1, N2)], H) :- member(e(N1, N2), G), !.
 
 
 %generate a complete graph  with N nodes
-completeGraph(N, N, _, []).
-completeGraph(N, X, X, L):- X2 is X+1,
-			completeGraph(N, X2, 0, L), !.
-completeGraph(N, X, Y, [e(X,Y)| L]):-  
-				Y < X, 
-				Y2 is Y+1, 
-				completeGraph(N, X, Y2, L), !.
+%completeGraph(+N, -G). where N is the number of nodes
+range(A, B, A).
+range(A, B, X):- A2 is A +1, A2 =< B, range(A2, B, X).
 
+couple(N, N1, N2):- range(1, N, N1), range(1, N, N2).
+completeGraph(N, G):- findall(e(N1, N2), couple(N, N1, N2), G).
+%completeGraph(2, [e(1,1), e(1,2), e(2,1), e(2,2)]). 
 
-
-
-
+graph(N, H, P):-
+	completeGraph(N, G),
+	range(1, N, X1),
+	range(1, N, Y1),
+	anypathHops(G, Y1, X1, P, H). % Find the path from X1 to Y1
 
