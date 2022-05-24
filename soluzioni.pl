@@ -105,6 +105,29 @@ allreaching(G, N, L) :- findall(X, anypath(G, N, X, L2), L).
 %Try to generate all paths from a node to another, limiting the
 %maximum number of hops
 
+%il primo punto richiede di convertire la rete a griglia generate con gridlink (slide della lezione) nella rappresentazione a grafo 
+%(in questo modo poi lei può usare tutti i predicati già implementati sui grafi).
+%Quindi, idealmente, dovrebbe bastare convertire link(X, Y, X2, Y2) in e((X, Y), (X2, Y2)). findall può esserle utile in questo caso..
+%Esempio:
+%gridgraph(1, 2, R).
+%R = [e((0,0), e(0,1)), e((0,1), (0,0))]
+
+range(A, B, A).
+range(A, B, X):- A2 is A +1, A2 =< B, range(A2, B, X).
+
+neighbour(A, B, A, B2):- B2 is B+1.
+neighbour(A, B, A, B2):- B2 is B-1.
+neighbour(A, B, A2, B):- A2 is A+1.
+neighbour(A, B, A2, B):- A2 is A-1.
+
+gridgraph(N, M, R):-
+	findall(e((X, Y), (X2, Y2)),
+		(
+		range(0, N, X),
+		range(0, M, Y),
+		neighbour(X, Y, X2, Y2), X2 >= 0, Y2 >= 0, X2 < N, Y2 < M
+		),R).
+
 %anypathHops(+Graph, +Node1, +Node2, -List, +Hops).
 anypathHops(G, N1, N2, [e(N1, N3)|L], H):-
 				member(e(N1, N3), G),
@@ -115,11 +138,11 @@ anypathHops(G, N1, N2, [e(N1, N2)], H) :- member(e(N1, N2), G), !.
 %anypathHops([e(1,2), e(1,3), e(2,3)], 1, 3, L, 2). -> ok
 %anypathHops([e(1,2), e(1,3), e(2,3), e(3,4)], 1, 4, L, 2) -> ok.
 
+%gridgraph(3, 3, R), anypathHops(R, (0,0), (0,2), L, 4). -> ok
 
+% ----------
 %generate a complete graph  with N nodes
 %completeGraph(+N, -G). where N is the number of nodes
-range(A, B, A).
-range(A, B, X):- A2 is A +1, A2 =< B, range(A2, B, X).
 
 couple(N, N1, N2):- range(1, N, N1), range(1, N, N2).
 completeGraph(N, G):- findall(e(N1, N2), couple(N, N1, N2), G).
@@ -131,3 +154,10 @@ graph(N, H, P):-
 	range(1, N, Y1),
 	anypathHops(G, Y1, X1, P, H). % Find the path from X1 to Y1
 
+% ----------
+
+gridlink(N, M, link(X, Y, X2, Y2)):-
+	range(0, N, X),
+	range(0, M, Y),
+	neighbour(X, Y, X2, Y2),
+	X2 >= 0, Y2 >= 0, X2 < N, Y2 < M.
