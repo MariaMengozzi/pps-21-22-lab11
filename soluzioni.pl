@@ -27,18 +27,23 @@ fromList([H1, H2 | T], [e(H1, H2) | L]) :- fromList([H2 | T], L).
 %fromList([1], []).
 
 %fromCircList(+List, -Graph)
-last([H], H).
-last([H|T], L):- last(T, L).
+formCircList([H|T], G):- fromCircList2([H|T], H, G).
+fromCircList2([X], H, [e(X,H)]).
+fromCircList2([H1, H2 | T], H, [e(H1, H2) | L]):- fromCircList2([H2 | T], H, L).
 
-fromCircList2([E], [e(E,E)]).
-fromCircList2([H|T], R):- fromList([H|T], G),
-				last(T, L), !,
-	`			append(G, [e(L, H)], R).
 
-fromCircList([E], [e(E,E)]).
-fromCircList([H|T], G):- withFirst(H, [H| T], G).
-withFirst(H, [L], [e(L,H)]).
-withFirst(H, [H1, H2|T], [e(H1, H2)|L]):- withFirst(H, [H2|T], L).
+%last([H], H).
+%last([H|T], L):- last(T, L).
+
+%fromCircList2([E], [e(E,E)]).
+%fromCircList2([H|T], R):- fromList([H|T], G),
+%				last(T, L), !,
+%	`			append(G, [e(L, H)], R).
+
+%fromCircList([E], [e(E,E)]).
+%fromCircList([H|T], G):- withFirst(H, [H| T], G).
+%withFirst(H, [L], [e(L,H)]).
+%withFirst(H, [H1, H2|T], [e(H1, H2)|L]):- withFirst(H, [H2|T], L).
 
 %fromCircList([1,2,3,4], [e(1,2), e(2,3), e(3,4), e(4,1)]).
 %fromCircList([1,2,3], [e(1,2), e(2,3), e(3,1)]).
